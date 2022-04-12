@@ -2,7 +2,7 @@
 #define __PREPAREMATRIX_H__
 
 
-int** removeNum(int** matrix, char* difficulty);
+void removeNum(int matrix[9][9], char* difficulty);
 
 
 #endif

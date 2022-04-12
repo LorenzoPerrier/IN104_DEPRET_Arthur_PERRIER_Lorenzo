@@ -5,7 +5,7 @@
 #include <prepareMatrix.h>
 
 
-int** removeNum(int** matrix, char* difficulty){
+void removeNum(int matrix[9][9], char* difficulty){
 
 srand(time(0));
 
@@ -96,6 +96,6 @@ for (int k =0,k<56,++k){
 
 }
 
-return matrix;
+
 
 }
