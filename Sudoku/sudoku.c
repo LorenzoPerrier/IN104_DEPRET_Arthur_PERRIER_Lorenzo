@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
-#include "prepareMatrix.h"
+#include <string.h>
 
 //#define	int matrix[9][9];
 
@@ -23,39 +23,31 @@ void fillGrid(int tab[3][3]) {
 		}
 	}
 
-//Vérifie si une ligne n'a pas deux mêmes chiffres	
-bool checkLine(int tab[9][9], int ligne) {
-	for (int i=0; i<8; i++) {
-		for (int j=i+1; j<9; j++) {
-			if (tab[ligne][j] !=0) {
-				if (tab[ligne][i] == tab[ligne][j]) {
-					return false;
-				}
+//Vérifie si un chiffre peut rentrer dans une ligne
+bool notinLine(int tab[9][9], int ligne, int num) {
+	for (int j=0; j<8; j++) {
+		if (tab[ligne][j] == num) {
+			return false;
 			}
+		}
+	return true;
+}
+
+//Vérifie si un chiffre peut rentrer dans une colonne
+bool notinColumn(int tab[9][9], int colonne, int num) {
+	for (int i=0; i<8; i++) {
+		if (tab[i][colonne] == num) {
+			return false;
 		}
 	}
 	return true;
 }
 
-//Vérifie si une colonne n'a pas deux mêmes chiffres	
-bool checkColumn(int tab[9][9], int colonne) {
-	for (int i=0; i<8; i++) {
-		for (int j=i+1; j<9; j++) {
-			if (tab[j][colonne] !=0) {
-				if (tab[i][colonne] == tab[j][colonne]) {
-					return false;
-				}
-			}
-		}
-	}
-	return true;
-}
-
-//Vérifie si une matrice antisymétrique peut rentrer
-bool checkMatrix(int tab[9][9], int x, int y) {
+//Vérifie si un chiffre n'est pas dans une matrice 3x3
+bool notinMatrix(int tab[9][9], int x , int y, int num) {
 	for (int i=x; i<x+3; i++) {
 		for (int j=y; j<y+3; j++) {
-			if (checkColumn(tab, j) == false || checkLine(tab, i) == false) {
+			if (tab[i][j] == num) {
 				return false;
 			}
 		}
@@ -63,114 +55,112 @@ bool checkMatrix(int tab[9][9], int x, int y) {
 	return true;
 }
 
-//Créer les matrices antidiagonales et les met dans la grande
-void fillAntiSymetric(int tab[9][9]) {
-	int smallUp[3][3];
-	int smallDown[3][3];
-
-	fillGrid(smallUp);
-	fillGrid(smallDown);
-
-	for (int i=0; i<3; i++) {
-		for (int j=6; j<9; j++) {
-			tab[i][j] = smallUp[i][j-6];
-		}
+//Vérifie si uun chiffre peut se mettre à cette place
+bool checkPosition(int tab[9][9], int i, int j, int num) {
+	if (notinMatrix(tab, i, j, num) && notinColumn(tab, j, num) && notinLine(tab, i, num)) {
+		return true;
 	}
-
-	while (checkMatrix(tab, 0, 6) == false) {
-		fillGrid(smallUp);
-		for (int i=0; i<3; i++) {
-			for (int j=6; j<9; j++) {
-				tab[i][j] = smallUp[i][j-6];
-			}
-		}
-	}
-
-	for (int i=6; i<9; i++) {
-		for (int j=0; j<3; j++) {
-			tab[i][j] = smallDown[i-6][j];
-		}
-	}
-
-	while (checkMatrix(tab, 6, 0) == false) {
-		fillGrid(smallDown);
-		for (int i=6; i<9; i++) {
-			for (int j=0; j<3; j++) {
-				tab[i][j] = smallDown[i-6][j];
-			}
-		}
-	}
+	return false;
 }
 
-void fillOthers(int tab[9][9]) {
-	int smallUp[3][3];
-	int smallDown[3][3];
-	int smallRight[3][3];
-	int smallLeft[3][3];
 
-	fillGrid(smallUp);
-	fillGrid(smallDown);
-	fillGrid(smallLeft);
-	fillGrid(smallRight);
+bool fillOthers(int tab[9][9], int i, int j) {
+	//On a balayé toute la matrice
+	if (i>=9 && j>=9) {
+		return true;
+	}
 
-	for (int i=0; i<3; i++) {
-		for (int j=3; j<6; j++) {
-			tab[i][j] = smallUp[i][j-3];
+	//On arrive au bout de la ligne => ligne suivante et colonne 1
+	if (j>=9 && i<8) {
+		i++;
+		j = 0;
+	}
+
+	//On est dans la matrice en haut à gauche déjà remplie => on va dans la matrice d'à côté
+	if (i<3) {
+		if (j<3) {
+			j = 3;
 		}
 	}
 
-	while (checkMatrix(tab, 0, 3) == false) {
-		fillGrid(smallUp);
-		for (int i=0; i<3; i++) {
-			for (int j=3; j<6; j++) {
-				tab[i][j] = smallUp[i][j-3];
+	//On est dans la matrice du centre déjà remplie => on va à droite
+	else if (i<6) {
+		if (j == 3) {
+			j = j + 3;
+		}
+	}
+
+	//On est dans la matrice en bas à droite déjà remplie => on retourne à la ligne sauf si on est sur la dernière
+	else {
+		if (j == 6) {
+			i++;
+			j = 0;
+			if (i>=9) {
+				return true;
 			}
 		}
 	}
 
-	for (int i=6; i<9; i++) {
-		for (int j=3; j<6; j++) {
-			tab[i][j] = smallDown[i-6][j-3];
-		}
-	}
-
-	while (checkMatrix(tab, 6, 3) == false) {
-		fillGrid(smallDown);
-		for (int i=6; i<9; i++) {
-			for (int j=3; j<6; j++) {
-				tab[i][j] = smallDown[i-6][j-3];
+	//On met un numéro qui rentre dans la case (i,j) et on passe à la suivante
+	//Si on en a pas trouvé, on arrête de remplir et on renvoie false
+	for (int num=1; num<=9; num++) {
+		if (checkPosition(tab, i, j, num)) {
+			tab[i][j] = num;
+			if (fillOthers(tab, i, j+1)) {
+				return true;
 			}
+			tab[i][j] = 0;
 		}
 	}
+	return false;
+}
 
-	for (int i=3; i<6; i++) {
-		for (int j=0; j<3; j++) {
-			tab[i][j] = smallLeft[i-3][j];
-		}
+void removeNum(int matrix[9][9], char* difficulty){
+	int N;
+	int choice;
+	if (strcmp(difficulty, "easy") == 0) {
+		choice = 1;
+	}
+	if (strcmp(difficulty, "medium") == 0) {
+		choice = 2;
+	}
+	if (strcmp(difficulty, "hard") == 0) {
+		choice = 3;
+	}
+	else {
+		choice = 4;
 	}
 
-	while (checkMatrix(tab, 3, 0) == false) {
-		fillGrid(smallLeft);
-		for (int i=3; i<6; i++) {
-			for (int j=0; j<3; j++) {
-				tab[i][j] = smallLeft[i-3][j];
-			}
-		}
+switch (choice) {
+	case 1 :
+		N = 27;
+	break;
+
+	case 2:
+		N = 40;
+	break;
+
+	case 3 :
+		N = 56;
+	break;
+
+	default : 
+		printf("No Difficulty recognized --> going for HARD HAHAHA\n");
+		N = 56;
 	}
 
-	for (int i=3; i<6; i++) {
-		for (int j=6; j<9; j++) {
-			tab[i][j] = smallRight[i-3][j-6];
-		}
-	}
-
-	while (checkMatrix(tab, 3, 6) == false) {
-		fillGrid(smallRight);
-		for (int i=3; i<6; i++) {
-			for (int j=6; j<9; j++) {
-				tab[i][j] = smallRight[i-3][j-6];
-			}
-		}
+	int i = 0;
+	int j = 0;
+	for (int k =0; k<N; ++k){ 
+		 i = rand()%81;
+		 j = rand()%81;
+		 
+		 while(matrix[i][j] == 0){
+			 i = rand()%81;
+			 j = rand()%81;
+		 }
+	 
+		 matrix[i][j] = 0;
 	}
 }
 
@@ -220,11 +210,12 @@ int main() {
 			full[i][j] = down_right[i-6][j-6];
 		}
 	}
-
-	fillAntiSymetric(full);
-	fillOthers(full);
 	display(full);
-
+	while (fillOthers(full, 0, 3) == false) {
+			fillOthers(full, 0, 3);
+		}
+	display(full);
 	removeNum(full, "easy");
 	display(full);
+
 }
