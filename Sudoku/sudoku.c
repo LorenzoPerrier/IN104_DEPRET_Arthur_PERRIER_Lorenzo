@@ -4,7 +4,10 @@
 #include <time.h>
 #include <string.h>
 
-//#define	int matrix[9][9];
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 
 //Remplit une matrice aléatoire de taille 3x3
 void fillGrid(int tab[3][3]) {
@@ -123,41 +126,88 @@ bool fillOthers(int tab[9][9], int i, int j) {
 	return false;
 }
 
-void removeNum(int matrix[9][9], int choice){
+int** removeNum(int matrix[9][9], int choice){
 	int N;
 
 	switch (choice) {
 		case 1 :
 			N = 27;
+			printf("facile\n");
 		break;
 
 		case 2:
 			N = 40;
+			printf("moyen\n");
 		break;
 
 		case 3 :
 			N = 56;
+			printf("hardcore\n");
 		break;
 
 		default : 
 			printf("No Difficulty recognized --> going for HARD HAHAHA\n");
 			N = 56;
 		}
-
+		
 		int i;
 		int j;
+		int** tab_index = malloc(N*sizeof(int*));
+		for (int g = 0; g<N;g++)
+		{
+		tab_index[g] = malloc(2*sizeof(int));
+		}
+		
 		for (int k =0; k<N; ++k){ 
-			 i = rand()%81;
-			 j = rand()%81;
+			 i = rand()%9;
+			 j = rand()%9;
+			 
 			 
 			 while(matrix[i][j] == 0){
-				 i = rand()%81;
-				 j = rand()%81;
+				 i = rand()%9;
+				 j = rand()%9;
 			 }
+			 
 			 matrix[i][j] = 0;
+			 tab_index[k][1]=i;
+			 tab_index[k][2]=j;
+			 
 		}
+		return tab_index;
+
 }
 
+void freeTab(int** tab_index, int difficulty)
+{
+int N;
+switch (difficulty) {
+		case 1 :
+			N = 27;
+			
+		break;
+
+		case 2:
+			N = 40;
+			
+		break;
+
+		case 3 :
+			N = 56;
+			
+		break;
+
+		default : 
+			
+			N = 56;
+		}
+		
+for (int k=0; k<N;k++)
+{
+free(tab_index[k]);
+}
+free(tab_index);
+
+}
 bool checkIfFull(int matrix[9][9]) {
 	for (int i=0; i<9; i++) {
 		for (int j=0; j<9; j++) {
@@ -168,8 +218,38 @@ bool checkIfFull(int matrix[9][9]) {
 	}
 	return true;
 }
+bool checkListIndex(int** tab_index, int difficulty, int i, int j)
+{
+int N;
+switch (difficulty) {
+		case 1 :
+			N = 27;
+			
+		break;
 
-void askPlayer(int matrix[9][9]) {
+		case 2:
+			N = 40;
+			
+		break;
+
+		case 3 :
+			N = 56;
+			
+		break;
+
+		default : 
+			
+			N = 56;
+		}
+		
+for (int k=0; k<N;k++)
+{
+if (tab_index[k][1] == i && tab_index[k][2]==j){return true;}
+
+}
+return false;
+}
+void askPlayer(int matrix[9][9], int** tab_index, int difficulty) {
 	int i;
 	int j;
 	int number;
@@ -180,14 +260,18 @@ void askPlayer(int matrix[9][9]) {
 	printf("Colonne ?");
 	scanf("%d",&j);
 	printf("\n");
-	while (matrix[i][j] != 0) {
-		printf("Joue pas au con avec moi, choisis une case vide.\n");
+	i--;
+	j--;
+	while (!checkListIndex(tab_index,difficulty,i,j)) {
+		printf("Joue pas au con avec moi, choisis une case modifiable.\n");
 		printf("Ligne ?");
 		scanf("%d",&i);
 		printf("\n");
 		printf("Colonne ?");
 		scanf("%d",&j);
 		printf("\n");
+		i--;
+		j--;
 	}
 	printf("Nombre à mettre dans la case ?");
 	scanf("%d",&number);
@@ -202,12 +286,34 @@ void askPlayer(int matrix[9][9]) {
 }
 
 //Affiche la matrice
-void display(int tab[9][9]) {
+void display(int tab[9][9],int** tab_index, int difficulty) {
 	for (int i=0; i<9; i++) {
+	if(i == 3 || i==6)
+	{
+	for (int k =0; k<9; k++){
+	printf("--");
+	}
+	printf("\n");
+	}
+	
 		for (int j=0; j<9; j++) {
+		
+			if (checkListIndex(tab_index,difficulty,i,j))
+			{
+			
+			printf(ANSI_COLOR_RED "%d " ANSI_COLOR_RESET, tab[i][j]);
+			
+			}
+			else{
 			printf("%d ", tab[i][j]);
+			}
+			
+			if (j==2 || j==5){
+			printf("| ");
+			}
 		}
 		printf("\n");
+	
 	}
 	printf("\n");
 }
@@ -275,17 +381,21 @@ int main() {
 			}
 		}
 		fillOthers(full, 0, 3);
-		display(full);
+		//display(full);
 		}
 
-	display(full);
-	removeNum(full, 1);
-	display(full);
+	//display(full);
+	int difficulty = 1;
+	int ** tab_index = removeNum(full, difficulty);
+	display(full,tab_index,difficulty);
 
 	while (checkIfFull(full) == false) {
-		askPlayer(full);
-		display(full);
+		askPlayer(full,tab_index, difficulty);
+		display(full,tab_index,difficulty);
 	}
-	return(0);
+	printf("Bravo, c'est gagné ! \n");
+	
+	freeTab(tab_index,difficulty);
+	return(0); 
 
 }
