@@ -25,7 +25,7 @@ void fillGrid(int tab[3][3]) {
 
 //Vérifie si un chiffre peut rentrer dans une ligne
 bool notinLine(int tab[9][9], int ligne, int num) {
-	for (int j=0; j<8; j++) {
+	for (int j=0; j<9; j++) {
 		if (tab[ligne][j] == num) {
 			return false;
 			}
@@ -35,7 +35,7 @@ bool notinLine(int tab[9][9], int ligne, int num) {
 
 //Vérifie si un chiffre peut rentrer dans une colonne
 bool notinColumn(int tab[9][9], int colonne, int num) {
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<9; i++) {
 		if (tab[i][colonne] == num) {
 			return false;
 		}
@@ -44,10 +44,18 @@ bool notinColumn(int tab[9][9], int colonne, int num) {
 }
 
 //Vérifie si un chiffre n'est pas dans une matrice 3x3
-bool notinMatrix(int tab[9][9], int x , int y, int num) {
-	for (int i=x; i<x+3; i++) {
-		for (int j=y; j<y+3; j++) {
-			if (tab[i][j] == num) {
+bool notinMatrix(int tab[9][9], int i , int j, int num) {
+	int x = i;
+	int y = j;
+	while (x%3 != 0) {
+		x--;
+	}
+	while (y%3 != 0) {
+		y--;
+	}
+	for (int k=x; k<x+3; k++) {
+		for (int l=y; l<y+3; l++) {
+			if (tab[k][l] == num) {
 				return false;
 			}
 		}
@@ -161,6 +169,38 @@ bool checkIfFull(int matrix[9][9]) {
 	return true;
 }
 
+void askPlayer(int matrix[9][9]) {
+	int i;
+	int j;
+	int number;
+	printf("Quelle case voulez vous remplir ?\n");
+	printf("Ligne ?");
+	scanf("%d",&i);
+	printf("\n");
+	printf("Colonne ?");
+	scanf("%d",&j);
+	printf("\n");
+	while (matrix[i][j] != 0) {
+		printf("Joue pas au con avec moi, choisis une case vide.\n");
+		printf("Ligne ?");
+		scanf("%d",&i);
+		printf("\n");
+		printf("Colonne ?");
+		scanf("%d",&j);
+		printf("\n");
+	}
+	printf("Nombre à mettre dans la case ?");
+	scanf("%d",&number);
+	printf("\n");
+	while (checkPosition(matrix, i, j, number) == false) {
+		printf("T'es nul, rejoue\n");
+		printf("Nombre à mettre dans la case ?");
+		scanf("%d",&number);
+		printf("\n");
+	}
+	matrix[i][j] = number;
+}
+
 //Affiche la matrice
 void display(int tab[9][9]) {
 	for (int i=0; i<9; i++) {
@@ -237,9 +277,15 @@ int main() {
 		fillOthers(full, 0, 3);
 		display(full);
 		}
+
 	display(full);
 	removeNum(full, 1);
 	display(full);
+
+	while (checkIfFull(full) == false) {
+		askPlayer(full);
+		display(full);
+	}
 	return(0);
 
 }
