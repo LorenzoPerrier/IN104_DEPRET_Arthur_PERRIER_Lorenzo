@@ -115,53 +115,50 @@ bool fillOthers(int tab[9][9], int i, int j) {
 	return false;
 }
 
-void removeNum(int matrix[9][9], char* difficulty){
+void removeNum(int matrix[9][9], int choice){
 	int N;
-	int choice;
-	if (strcmp(difficulty, "easy") == 0) {
-		choice = 1;
-	}
-	if (strcmp(difficulty, "medium") == 0) {
-		choice = 2;
-	}
-	if (strcmp(difficulty, "hard") == 0) {
-		choice = 3;
-	}
-	else {
-		choice = 4;
-	}
 
-switch (choice) {
-	case 1 :
-		N = 27;
-	break;
+	switch (choice) {
+		case 1 :
+			N = 27;
+		break;
 
-	case 2:
-		N = 40;
-	break;
+		case 2:
+			N = 40;
+		break;
 
-	case 3 :
-		N = 56;
-	break;
+		case 3 :
+			N = 56;
+		break;
 
-	default : 
-		printf("No Difficulty recognized --> going for HARD HAHAHA\n");
-		N = 56;
-	}
+		default : 
+			printf("No Difficulty recognized --> going for HARD HAHAHA\n");
+			N = 56;
+		}
 
-	int i = 0;
-	int j = 0;
-	for (int k =0; k<N; ++k){ 
-		 i = rand()%81;
-		 j = rand()%81;
-		 
-		 while(matrix[i][j] == 0){
+		int i;
+		int j;
+		for (int k =0; k<N; ++k){ 
 			 i = rand()%81;
 			 j = rand()%81;
-		 }
-	 
-		 matrix[i][j] = 0;
+			 
+			 while(matrix[i][j] == 0){
+				 i = rand()%81;
+				 j = rand()%81;
+			 }
+			 matrix[i][j] = 0;
+		}
+}
+
+bool checkIfFull(int matrix[9][9]) {
+	for (int i=0; i<9; i++) {
+		for (int j=0; j<9; j++) {
+			if (matrix[i][j] == 0) {
+				return false;
+			}
+		}
 	}
+	return true;
 }
 
 //Affiche la matrice
@@ -210,12 +207,39 @@ int main() {
 			full[i][j] = down_right[i-6][j-6];
 		}
 	}
-	display(full);
-	while (fillOthers(full, 0, 3) == false) {
-			fillOthers(full, 0, 3);
+	
+	while (checkIfFull(full) == false) {
+		for (int i=0; i<9; i++) { 
+			for (int j=0; j<9; j++) {
+				full[i][j] = 0;
+			}
+		}
+		fillGrid(up_left);
+		fillGrid(center);
+		fillGrid(down_right);
+
+		//On les met dans la matrice principale
+		for (int i=0; i<3; i++) {
+			for (int j=0; j<3; j++) {
+				full[i][j] = up_left[i][j];
+			}
+		}
+		for (int i=3; i<6; i++) {
+			for (int j=3; j<6; j++) {
+				full[i][j] = center[i-3][j-3];
+			}
+		}
+		for (int i=6; i<9; i++) {
+			for (int j=6; j<9; j++) {
+				full[i][j] = down_right[i-6][j-6];
+			}
+		}
+		fillOthers(full, 0, 3);
+		display(full);
 		}
 	display(full);
-	removeNum(full, "easy");
+	removeNum(full, 1);
 	display(full);
+	return(0);
 
 }
