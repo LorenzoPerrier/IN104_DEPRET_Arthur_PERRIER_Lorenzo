@@ -142,7 +142,7 @@ int** removeNum(int matrix[9][9], int choice){
 
 		case 3 :
 			N = 56;
-			printf("hardcore\n");
+			printf("Difficile\n");
 		break;
 
 		default : 
@@ -290,7 +290,7 @@ void display(int tab[9][9],int** tab_index, int difficulty) {
 	for (int i=0; i<9; i++) {
 	if(i == 3 || i==6)
 	{
-	for (int k =0; k<9; k++){
+	for (int k =0; k<11; k++){
 	printf("--");
 	}
 	printf("\n");
@@ -317,6 +317,8 @@ void display(int tab[9][9],int** tab_index, int difficulty) {
 	}
 	printf("\n");
 }
+
+/*************************************MAIN***********************************************/
 
 int main() {
 	srand(time(0));
@@ -354,38 +356,12 @@ int main() {
 		}
 	}
 	
-	while (checkIfFull(full) == false) {
-		for (int i=0; i<9; i++) { 
-			for (int j=0; j<9; j++) {
-				full[i][j] = 0;
-			}
-		}
-		fillGrid(up_left);
-		fillGrid(center);
-		fillGrid(down_right);
-
-		//On les met dans la matrice principale
-		for (int i=0; i<3; i++) {
-			for (int j=0; j<3; j++) {
-				full[i][j] = up_left[i][j];
-			}
-		}
-		for (int i=3; i<6; i++) {
-			for (int j=3; j<6; j++) {
-				full[i][j] = center[i-3][j-3];
-			}
-		}
-		for (int i=6; i<9; i++) {
-			for (int j=6; j<9; j++) {
-				full[i][j] = down_right[i-6][j-6];
-			}
-		}
-		fillOthers(full, 0, 3);
-		//display(full);
-		}
+	fillOthers(full, 0, 3);
 
 	//display(full);
 	int difficulty = 1;
+	printf("Quelle difficulté voulez-vous ?\n[1]Facile\n[2]Moyen\n[3]Difficile\n");
+	scanf(" %d", &difficulty);
 	int ** tab_index = removeNum(full, difficulty);
 	display(full,tab_index,difficulty);
 
