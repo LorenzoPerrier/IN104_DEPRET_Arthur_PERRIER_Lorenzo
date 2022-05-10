@@ -5,9 +5,14 @@
 #include <string.h>
 #include <math.h>
 
-#define LENGTH 30
-#define WIDTH 60
+#define LENGTH 23
+#define WIDTH 55
 #define NR_GHOSTS 5
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define RESET "\x1B[0m"
 
 struct coordinates{
 	int x;
@@ -145,7 +150,7 @@ int abs(int x) {
     }
 }
 
-//Si un fantôme arrive près du joueur, il le suit
+//Si un fantôme arrive près du joueur, il le suit, sinon il se déplace aléatoirement
 void follow(struct PacMan *p, struct Ghost *allGhosts[NR_GHOSTS], char area[LENGTH][WIDTH]) {
     struct Ghost *g;
     float distance;
@@ -157,12 +162,10 @@ void follow(struct PacMan *p, struct Ghost *allGhosts[NR_GHOSTS], char area[LENG
         int gx = g->position.x;
         int gy = g->position.y;
         distance = sqrt(pow(gx-px,2) + pow(gy-py,2));
-         printf("%c\n", area[g->position.x][g->position.y]);
-         printf("%c\n", area[gx-1][gy]);
 
         if (distance < 10) {
-            if (abs(px-gx)>=abs(gy-py)) {
-                if (gx>=px && area[gx-1][gy]=='#' && area[gx-1][gy]!='G') {
+            if (abs(px-gx)>abs(gy-py)) {
+                if (gx>px && area[gx-1][gy]!='#' && area[gx-1][gy]!='G') {
                     g->position.x--;
                 }
                 if (gx<px && area[gx+1][gy]!='#' && area[gx+1][gy]!='G') {
@@ -170,7 +173,7 @@ void follow(struct PacMan *p, struct Ghost *allGhosts[NR_GHOSTS], char area[LENG
                 }
             }
             if (abs(px-gx)<abs(gy-py)) {
-                if (gy>=py && area[gx][gy-1]!='#' && area[gx][gy-1]!='G') {
+                if (gy>py && area[gx][gy-1]!='#' && area[gx][gy-1]!='G') {
                     g->position.y--;
                 }
                 if (gy<py && area[gx][gy+1]!='#' && area[gx][gy+1]!='G') {
@@ -196,7 +199,21 @@ void follow(struct PacMan *p, struct Ghost *allGhosts[NR_GHOSTS], char area[LENG
 void display(char area[LENGTH][WIDTH]) {
     for (int i=0; i<LENGTH; i++) {
       for (int j=0; j<WIDTH; j++) {
-        printf("%c", area[i][j]);
+        if (area[i][j] == 'P') {
+            printf(YEL "%c" RESET, area[i][j]);
+        }
+        if (area[i][j] == 'G') {
+            printf(RED "%c" RESET, area[i][j]);
+        }
+        if (area[i][j] == '#') {
+            printf(GRN "%c" RESET, area[i][j]);
+        }
+        if (area[i][j] == '.') {
+            printf(BLU "%c" RESET, area[i][j]);
+        }
+        if (area[i][j] == ' ') {
+            printf("%c" , area[i][j]);
+        }
         }
         printf("\n");
     }
@@ -218,36 +235,29 @@ int main() {
     allGhosts[4] = &ghost5;
 	struct PacMan player;
 	char area[LENGTH][WIDTH] = {
-   { "############################################################" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#        # # # # #          #             # # # # # #      #" },
-   { "#        #       #         # #            #                #" },
-   { "#        #       #        #   #           #                #" },
-   { "#        # # # # #       #     #          #                #" },
-   { "#        #              # # # # #         #                #" },
-   { "#        #             #         #        #                #" },
-   { "#        #            #           #       #                #" },
-   { "#        #           #             #      #                #" },
-   { "#        #          #               #     # # # # # #      #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#        ##        ##           #          ##        #     #" },
-   { "#        # #      # #          # #         # #       #     #" },
-   { "#        #  #    #  #         #   #        #  #      #     #" },
-   { "#        #    # #   #        #     #       #   #     #     #" },
-   { "#        #     #    #       # # # # #      #    #    #     #" },
-   { "#        #          #      #         #     #     #   #     #" },
-   { "#        #          #     #           #    #      #  #     #" },
-   { "#        #          #    #             #   #       # #     #" },
-   { "#        #          #   #               #  #        ##     #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "#                                                          #" },
-   { "############################################################" }
+   { "#######################################################" },
+   { "#                                                     #" },
+   { "#     # # # # # #           #           # # # # # #   #" },
+   { "#     #         #          # #          #             #" },
+   { "#     #         #         #   #         #             #" },
+   { "#     #         #        #     #        #             #" },
+   { "#     # # # # # #       # # # # #       #             #" },
+   { "#     #                #         #      #             #" },
+   { "#     #               #           #     #             #" },
+   { "#     #              #             #    #             #" },
+   { "#     #             #               #   # # # # # #   #" },
+   { "#                                                     #" },
+   { "#     ##        ##           #          ##        #   #" },
+   { "#     # #      # #          # #         # #       #   #" },
+   { "#     #  #    #  #         #   #        #  #      #   #" },
+   { "#     #    # #   #        #     #       #   #     #   #" },
+   { "#     #     #    #       # # # # #      #    #    #   #" },
+   { "#     #          #      #         #     #     #   #   #" },
+   { "#     #          #     #           #    #      #  #   #" },
+   { "#     #          #    #             #   #       # #   #" },
+   { "#     #          #   #               #  #        ##   #" },
+   { "#                                                     #" },
+   { "#######################################################" }
 };
 
 
@@ -282,5 +292,6 @@ int main() {
    return(0);
 
 }
+
 
 
