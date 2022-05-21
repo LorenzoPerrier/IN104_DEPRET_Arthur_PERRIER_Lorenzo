@@ -117,8 +117,8 @@ if (nombre_de_tour >=5){printf("match nul\n");}
 free(tab);
 
 }
-/*
+
 int main(){
 startTictactoe();
 }
-*/
+

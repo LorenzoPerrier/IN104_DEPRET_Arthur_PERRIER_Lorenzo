@@ -293,10 +293,10 @@ int startPacman() {
    return(0);
 
 }
-/*
+
 int main(){
 startPacman();
 }
 
-*/
+
 
