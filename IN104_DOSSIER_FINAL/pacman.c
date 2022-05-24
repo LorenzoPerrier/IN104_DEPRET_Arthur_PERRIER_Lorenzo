@@ -99,7 +99,7 @@ void inputPlayer(char input, struct PacMan *player) {
         player->ny = -1;
         player->nx = 0;
     }
-    if (input == 'w') {
+    if (input == 's') {
         player->ny = 1;
         player->nx = 0;
     }
@@ -279,8 +279,12 @@ int startPacman() {
 
    char input;
    while (player.lifes>0) {
-        printf("What is your next move ?\n");
-        scanf(" %c",&input);
+        do {
+        printf("What is your next move ? (Z,Q,S,D) :\n");
+        scanf(" %c",&input);  
+        }
+        while (input != 's' && input != 'q' && input != 'z' && input != 'd');
+
         inputPlayer(input, &player);
         movePlayer(&player, area);
         follow(&player, allGhosts, area);

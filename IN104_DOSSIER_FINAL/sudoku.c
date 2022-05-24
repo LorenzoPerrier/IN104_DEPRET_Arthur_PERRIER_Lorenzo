@@ -208,6 +208,7 @@ free(tab_index[k]);
 free(tab_index);
 
 }
+
 bool checkIfFull(int matrix[9][9]) {
 	for (int i=0; i<9; i++) {
 		for (int j=0; j<9; j++) {
@@ -218,6 +219,7 @@ bool checkIfFull(int matrix[9][9]) {
 	}
 	return true;
 }
+
 bool checkListIndex(int** tab_index, int difficulty, int i, int j)
 {
 int N;
@@ -249,6 +251,7 @@ if (tab_index[k][1] == i && tab_index[k][2]==j){return true;}
 }
 return false;
 }
+
 void askPlayer(int matrix[9][9], int** tab_index, int difficulty) {
 	int i;
 	int j;
@@ -263,7 +266,7 @@ void askPlayer(int matrix[9][9], int** tab_index, int difficulty) {
 	i--;
 	j--;
 	while (!checkListIndex(tab_index,difficulty,i,j)) {
-		printf("Joue pas au con avec moi, choisis une case modifiable.\n");
+		printf("Hop hop hop, fais pas le malin toi, choisis une case modifiable.\n");
 		printf("Ligne ?");
 		scanf("%d",&i);
 		printf("\n");

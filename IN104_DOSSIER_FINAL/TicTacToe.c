@@ -22,17 +22,9 @@ if (cpt == 2 || cpt == 5 || cpt ==8){printf("\n");}
 if (cpt == 2 || cpt == 5) {printf("----------\n");}
 if(cpt !=2 && cpt!= 5 && cpt!= 8) {printf(" | ");}
 
-cpt+=1;
+cpt++;
 
 }
-}
-
-void test_affichage(int * tab){
-
-afficher(tab);
-tab[3]=1;
-tab[8]=2;
-afficher(tab);
 }
 
 void placer(int* grille, int chiffre, int joueur){
@@ -42,11 +34,11 @@ grille[chiffre]=joueur;
 void placer_alea(int* grille, int joueur){
 int test = 0;
 while (test == 0){
-int rd = rand()%9;
-if (grille[rd] == 0){test = 1;
-placer(grille, rd, joueur);
-}
-}
+	int rd = rand()%9;
+	if (grille[rd] == 0){test = 1;
+		placer(grille, rd, joueur);
+		}
+	}
 }
 
 int a_gagne(int* grille, int joueur){
@@ -109,9 +101,9 @@ placer_alea(tab, joueur);}
 }
 afficher(tab);
 
-if (a_gagne(tab,1)==1){printf("Vous avez gagné\n");}
-if (a_gagne(tab,2)==1){printf("L'ordi a gagné\n");}
-if (nombre_de_tour >=5){printf("match nul\n");}
+if (a_gagne(tab,1)==1){printf("Vous avez gagné !\n");}
+if (a_gagne(tab,2)==1){printf("Vous avez perdu !\n");}
+if (nombre_de_tour >=5){printf("Match nul\n");}
 
 
 free(tab);
